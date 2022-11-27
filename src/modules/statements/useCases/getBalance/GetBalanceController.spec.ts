@@ -7,7 +7,7 @@ let connection: Connection;
 
 let session: ISessionsResponseDTO;
 
-describe("Create Statement Controller", () => {
+describe("Get Balance Controller", () => {
   beforeAll(async () => {
     connection = await createConnection();
 
@@ -34,31 +34,13 @@ describe("Create Statement Controller", () => {
 
   it("should create a deposit statement correctly", async () => {
     const response = await request(app)
-      .post("/api/v1/statements/deposit")
-      .send({
-        amount: 123,
-        description: "Test Description",
-      })
+      .get("/api/v1/statements/balance")
       .set({
         Authorization: `Bearer ${session.token as string}`,
       });
 
-    expect(response.status).toEqual(201);
-    expect(response.body).toHaveProperty("id");
-  });
-
-  it("should create a withdraw statement correctly", async () => {
-    const response = await request(app)
-      .post("/api/v1/statements/withdraw")
-      .send({
-        amount: 123,
-        description: "Test Description",
-      })
-      .set({
-        Authorization: `Bearer ${session.token as string}`,
-      });
-
-    expect(response.status).toEqual(201);
-    expect(response.body).toHaveProperty("id");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("statement");
+    expect(response.body).toHaveProperty("balance");
   });
 });
