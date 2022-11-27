@@ -10,12 +10,34 @@ describe("Create User Controller", () => {
     await connection.runMigrations();
   });
 
-  afterAll(() => {
-    connection.dropDatabase();
-    connection.close();
+  afterAll(async () => {
+    await connection.dropDatabase();
+    await connection.close();
   });
 
   it("should create a new user", async () => {
-    console.log("Test!");
+    const response = await request(app).post("/api/v1/users").send({
+      name: "Test User",
+      password: "123456",
+      email: "user@email.com",
+    });
+
+    expect(response.status).toBe(201);
+  });
+
+  it("should not allow to create a new user with an email that already exists", async () => {
+    await request(app).post("/api/v1/users").send({
+      name: "Test User",
+      password: "123456",
+      email: "user@email.com",
+    });
+
+    const response = await request(app).post("/api/v1/users").send({
+      name: "Test User",
+      password: "123456",
+      email: "user@email.com",
+    });
+
+    expect(response.status).toBe(400);
   });
 });
